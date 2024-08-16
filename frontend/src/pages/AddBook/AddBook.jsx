@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from './AddBook.module.css';
-import BookForm from '../../components/Books/BookForm/BookForm';
-import BackArrow from '../../components/BackArrow/BackArrow';
-import { useUser } from '../../lib/customHooks';
-import { APP_ROUTES } from '../../utils/constants';
-import bookAdd from '../../images/book_add.jpg';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import styles from './AddBook.module.css'
+import BookForm from '../../components/Books/BookForm/BookForm'
+import BackArrow from '../../components/BackArrow/BackArrow'
+import { useUser } from '../../lib/customHooks'
+import { APP_ROUTES } from '../../utils/constants'
+import bookAdd from '../../images/book_add.jpg'
 
-function AddBook() {
-  const navigate = useNavigate();
-  const { connectedUser, auth, userLoading } = useUser();
-  const [created, setCreated] = useState(false);
+
+function AddBook () {
+  const navigate = useNavigate()
+  const { connectedUser, auth, userLoading } = useUser()
+  const [created, setCreated] = useState(false)
   useEffect(() => {
     if (!userLoading) {
       if (!connectedUser || !auth) {
-        navigate(APP_ROUTES.SIGN_IN);
+        navigate(APP_ROUTES.SIGN_IN)
       }
     }
-  }, [userLoading]);
+  }, [userLoading])
 
   return (
     <div className="content-container">
@@ -41,7 +42,7 @@ function AddBook() {
 
       </div>
     </div>
-  );
+  )
 }
 
-export default AddBook;
+export default AddBook
