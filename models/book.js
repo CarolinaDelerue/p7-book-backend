@@ -25,7 +25,7 @@ const calculateAverageRating = (book) => {
     }
 }
 
-// Middleware "pre('save')" pour mettre à jour la moyenne avant de sauvegarder
+// Middleware pour mettre à jour la moyenne avant de sauvegarder
 bookSchema.pre('save', function (next) {
     this.averageRating = calculateAverageRating(this)
     next()

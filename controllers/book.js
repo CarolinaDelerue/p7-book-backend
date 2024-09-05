@@ -1,7 +1,8 @@
 const Book = require('../models/book')
 const fs = require('fs')
 
-exports.createBook = (req, res, next) => {
+// Création d'un book + enregistrement en base
+exports.createBook = (req, res) => {
     const bookObject = JSON.parse(req.body.book)
     delete bookObject._id
     delete bookObject._userId
@@ -12,17 +13,19 @@ exports.createBook = (req, res, next) => {
     })
 
     book.save()
-        .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
+        .then(() => res.status(201).json({ message: 'Livre enregistré !' }))
         .catch(error => res.status(400).json({ error }))
 }
 
-exports.getOneBook = (req, res, next) => {
+// Chercher un book par son id
+exports.getOneBook = (req, res) => {
     Book.findOne({ _id: req.params.id })
         .then(book => res.status(200).json(book))
         .catch(error => res.status(404).json({ error }))
 }
 
-exports.modifyBook = (req, res, next) => {
+// modification d'un book dans la base de donnée
+exports.modifyBook = (req, res) => {
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -33,26 +36,27 @@ exports.modifyBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Not authorized' })
+                res.status(401).json({ message: 'Non-aurorisé' })
             } else {
                 Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+                    .then(() => res.status(200).json({ message: 'livre modifié !' }))
                     .catch(error => res.status(401).json({ error }))
             }
         })
         .catch(error => res.status(400).json({ error }))
 }
 
-exports.deleteBook = (req, res, next) => {
+// supprimer un book
+exports.deleteBook = (req, res) => {
     Book.findOne({ _id: req.params.id })
         .then(book => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Not authorized' })
+                res.status(401).json({ message: 'Non-autorisé' })
             } else {
                 const filename = book.imageUrl.split('/images/')[1]
                 fs.unlink(`images/${filename}`, () => {
                     Book.deleteOne({ _id: req.params.id })
-                        .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+                        .then(() => res.status(200).json({ message: 'Livre supprimé !' }))
                         .catch(error => res.status(401).json({ error }))
                 })
             }
@@ -60,13 +64,16 @@ exports.deleteBook = (req, res, next) => {
         .catch(error => res.status(500).json({ error }))
 }
 
-exports.getAllBooks = (req, res, next) => {
+
+// avoir tous les books
+exports.getAllBooks = (req, res) => {
     Book.find()
         .then(books => res.status(200).json(books))
         .catch(error => res.status(400).json({ error }))
 }
 
-// Notation d'un livre //
+// Notation d'un livre
+
 exports.rateBook = (req, res, next) => {
     // Crée un nouvel objet de notation en récupérant l'ID de l'utilisateur depuis l'authentification
     // et la note (rating) depuis le corps de la requête.
@@ -110,7 +117,7 @@ exports.rateBook = (req, res, next) => {
 
 
 // Récupération des 3 meilleures notations //
-exports.getBestRatings = (req, res, next) => {
+exports.getBestRatings = (req, res) => {
     // Recherche tous les livres dans la base de données.
     Book.find()
         // Trie les livres par la moyenne des notes (averageRating) de manière décroissante (les meilleures notes en premier).
