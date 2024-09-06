@@ -3,6 +3,12 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const { hashPassword, comparePassword } = require('../utils/password.handler')
 
+// Fonction pour valider l'email
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
+
 exports.signup = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -11,17 +17,21 @@ exports.signup = async (req, res) => {
             return res.status(400).json({ error: 'Veuillez remplir tous les champs' })
         }
 
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Veuillez entrer une adresse email valide.' })
+        }
+
         const isUserAlreadyExist = await User.findOne({ email })
 
         if (isUserAlreadyExist) {
             return res.status(400).json({ error: 'Cet email est déjà utilisé !' })
         }
 
-        const hashPassword = await hashPassword(password)
+        const hashedPassword = await hashPassword(password)
 
         const user = new User({
             email,
-            password: hashPassword
+            password: hashedPassword // Utilisation de hashedPassword
         })
 
         await user.save()
@@ -39,6 +49,10 @@ exports.login = async (req, res) => {
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Veuillez remplir tous les champs' })
+        }
+
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Veuillez entrer une adresse email valide.' })
         }
 
         const user = await User.findOne({ email })
