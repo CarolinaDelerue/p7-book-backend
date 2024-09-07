@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const { hashPassword, comparePassword } = require('../utils/password.handler')
 
-// Fonction pour valider l'email
+// Fonction pour valider l'adresse email
 const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
